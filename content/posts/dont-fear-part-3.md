@@ -76,7 +76,7 @@ it might have happened while writing the series that some were installed in diff
 compiles you should install everything at once first like so
 
 ```terminal { title="Debian host" }
-!!root!!host!!~!!apt-get install -y pasystray tint2 x11-utils dunst libnotify-bin feh xss-lock i3lock imagemagick libimlib2-dev libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxft-dev libxrender-dev zlib1g-dev libxinerama-dev libxcomposite-dev libxdamage-dev libxfixes-dev libxmu-dev xfce4-dev-tools build-essential libglib2.0-dev xorg-dev libwnck-3-dev libclutter-1.0-dev libgarcon-1-0-dev libxfconf-0-dev libxfce4util-dev libxfce4ui-2-dev libxcomposite-dev lxterminal xdotool gawk cmake libncurses-dev lua5.4-dev stow suckless-tools neovim maim xterm libutempter-dev debhelper-compat debhelper autoconf-dickey groff xorg-docs-core desktop-file-utils stest chafa vivid autoconf automake cmake g++ gettext libncurses5-dev libtool libtool-bin libunibilium-dev libunibilium4 ninja-build pkg-config libgmock-dev software-properties-common unzip 
+!!root!!host!!~!!apt-get install -y pasystray tint2 x11-utils dunst libnotify-bin feh xss-lock i3lock imagemagick libimlib2-dev libfontconfig1-dev libfreetype6-dev libx11-dev libxext-dev libxft-dev libxrender-dev zlib1g-dev libxinerama-dev libxcomposite-dev libxdamage-dev libxfixes-dev libxmu-dev xfce4-dev-tools build-essential libglib2.0-dev xorg-dev libwnck-3-dev libclutter-1.0-dev libgarcon-1-0-dev libxfconf-0-dev libxfce4util-dev libxfce4ui-2-dev libxcomposite-dev lxterminal xdotool gawk cmake libncurses-dev lua5.4-dev stow suckless-tools neovim maim xterm libutempter-dev debhelper-compat debhelper autoconf-dickey groff xorg-docs-core desktop-file-utils stest chafa vivid autoconf automake cmake g++ gettext libncurses5-dev libtool libtool-bin libunibilium-dev libunibilium4 ninja-build pkg-config libgmock-dev software-properties-common unzip xcape 
 ```
 
 ## Desktop manager
@@ -223,6 +223,27 @@ be easily fixed by creating the following file in your home directory
   Xcursor.size: 16
 ```
 
+## Caps as control/escape
+
+I have for many years been used to the caps lock key behaving as an escape key, if tapped, or
+control, if pressed. I currently am running a keyboard, Kinesis Advantage, where this can be set
+in the keyboard itself, however this is also doable in plain X11 by using [xcape](https://github.com/alols/xcape).
+This requires a small xmodmap file
+
+```terminal { title="Debian host" }
+!!luser!!host!!~!!sudo apt-get install -y xcape
+!.
+!!luser!!host!!~!!mkdir -p ~/.config/openbox/
+!!luser!!host!!~!!vi ~/.config/openbox/.Xmodmap
+!.
+!!luser!!host!!~!!cat ~/.config/openbox/.Xmodmap
+  clear Lock
+  keycode 66 = Control_L
+  add Control = Control_L
+```
+
+this will be sourced in the next section as part of the openbox startup
+
 ## X11 startup programs
 
 Openbox can start applications/processes when you log in, this is controlled by the 
@@ -237,6 +258,10 @@ file before having installed the relevant helper programs without getting errors
 {{< highlight bash >}}
 # This should already be automatically done, however just in case
 [ -f $HOME/.Xresources ] && /usr/bin/xrdb -merge $HOME/.Xresources
+
+# Easiest way to have tap-escape / held-ctrl, more full featured alternative is jtroo/kanata
+[ -f $HOME/.config/openbox/.Xmodmap -a -x /usr/bin/xmodmap ] && /usr/bin/xmodmap $HOME/.config/openbox/.Xmodmap
+[ -x /usr/bin/xcape ] && /usr/bin/xcape -t 200 &
 
 #  Panel
 [ -x /usr/bin/tint2 ] && /usr/bin/tint2 &

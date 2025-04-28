@@ -219,7 +219,9 @@ that is packaged with bookworm is fairly old (at the moment of this writing 0.26
 
 ## My dotfiles
 
-At this point I would suggest getting [my dotfiles](https://github.com/woodensquares/dotfiles) for some hopefully helpful defaults
+At this point I would suggest getting [my dotfiles](https://github.com/woodensquares/dotfiles) and set them up, we will
+go through in detail in future posts about their contents, which are primarily focused on
+the fish shell, neovim, and their integration with kitty.
 
 ```terminal { title="Debian host" }
 !!luser!!host!!~!!cd sources
