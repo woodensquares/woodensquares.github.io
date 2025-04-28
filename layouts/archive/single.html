@@ -1,4 +1,4 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:archive/single.html -->" | safeHTML }}
 {{- end -}}
 {{ partial "head" . }}
@@ -98,6 +98,6 @@
 
 {{ partial "copyright" . }}
 {{ partial "footer" . }}
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:archive/single.html -->" | safeHTML }}
 {{- end -}}

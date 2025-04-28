@@ -1,4 +1,4 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:partials/navbar_post.html -->" | safeHTML }}
 {{- end -}}
       </ul>
@@ -28,6 +28,6 @@
   </div> 
 </nav>
 </header>
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:partials/navbar_post.html -->" | safeHTML }}
 {{- end -}}

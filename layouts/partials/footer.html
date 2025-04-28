@@ -1,7 +1,7 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:partials/footer.html -->" | safeHTML }}
 {{- end -}}
-    {{ if .Site.IsServer }}
+    {{ if hugo.IsServer }}
     {{- /* from https://github.com/dirkolbrich/hugo-tailwindcss-starter-theme/blob/main/layouts/partials/dev/parameters.html */ -}}
     <div id="debug-hugo-parameters">
       <table>
@@ -96,6 +96,6 @@
         </table>
     </div>
 	{{- end -}}
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:partials/footer.html -->" | safeHTML }}
 {{- end -}}

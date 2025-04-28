@@ -1,4 +1,4 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:partials/article_content.html -->" | safeHTML }}
 {{- end -}}
 <article class="article-content">
@@ -18,6 +18,6 @@
     </div>
   {{ end }}
 {{ end }}
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:partials/article_content.html -->" | safeHTML }}
 {{- end -}}

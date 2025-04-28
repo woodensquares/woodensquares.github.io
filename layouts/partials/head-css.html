@@ -1,4 +1,4 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:partials/head-css.html -->" | safeHTML }}
 {{- end -}}
 {{- /* CSS/SCSS from https://github.com/brycewray/hugo_site/blob/main/layouts/partials/head-css.html */ -}}
@@ -6,14 +6,14 @@
 {{- $optionsCSS := (dict "transpiler" "dartsass" "targetPath" "css/index.css") -}}
 {{- $optionsCSSComp := merge $optionsCSS (dict "outputStyle" "compressed") -}}
 {{- if hugo.IsProduction -}}
-	{{- $css = resources.Get "scss/index.scss" | resources.ToCSS $optionsCSSComp | fingerprint "md5" -}}
+	{{- $css = resources.Get "scss/index.scss" | css.Sass $optionsCSSComp | fingerprint "md5" -}}
 {{- else -}}
-	{{- $css = resources.Get "scss/index.scss" | resources.ToCSS $optionsCSS | fingerprint "md5" -}}
+	{{- $css = resources.Get "scss/index.scss" | css.Sass $optionsCSS | fingerprint "md5" -}}
 	{{/*- Fingerprinting in dev due to Safari weirdness -*/}}
 {{- end -}}
 <link rel="preload" as="style" href="{{ $css.RelPermalink }}">
 <link rel="stylesheet" href="{{ $css.RelPermalink }}" type="text/css">
 {{- /* end, CSS/SCSS */}}
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:partials/head-css.html -->" | safeHTML }}
 {{- end -}}

@@ -1,5 +1,5 @@
 {{ define "main" }}
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:_default/taxonomy.html -->" | safeHTML }}
 {{- end -}}
 
@@ -14,7 +14,7 @@
 
 {{ partial "copyright" . }}
 
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:_default/taxonomy.html -->" | safeHTML }}
 {{- end -}}
 {{ end }}

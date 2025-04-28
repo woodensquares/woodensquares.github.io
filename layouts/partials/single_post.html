@@ -1,4 +1,4 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:partials/single_post.html -->" | safeHTML }}
 {{- end -}}
 {{ $cat := index .Params.categories 0}}
@@ -38,6 +38,6 @@
         </div>
     {{ end }}
   {{ end }}
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:partials/single_post.html -->" | safeHTML }}
 {{- end -}}

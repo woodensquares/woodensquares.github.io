@@ -1,4 +1,4 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:partials/prev_next_post.html -->" | safeHTML }}
 {{- end -}}
 {{ if and (or .PrevInSection .NextInSection) (not .Params.noprevnext) }}
@@ -23,6 +23,6 @@
     {{ end }}
 </nav>
 {{ end }}
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:partials/prev_next_post.html -->" | safeHTML }}
 {{- end -}}

@@ -3,7 +3,6 @@
 baseURL = "/"
 title = "WoodenSquares"
 languageCode = "en-us"
-paginate = "5"
 disqusShortname = ""
 googleAnalytics = ""
 uglyurls = true
@@ -12,6 +11,9 @@ pygmentsCodeFences = true
 pygmentsUseClasses = true
 footnotereturnlinkcontents = "↩"
 preserveTaxonomyNames = true
+
+[pagination]
+  pagerSize = 5
 
 [caches]
   [caches.images]

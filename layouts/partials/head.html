@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ with .Site.LanguageCode }}{{ . }}{{ else }}en-US{{ end }}">
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:_partials-head.html -->" | safeHTML }}
 {{- end -}}
 
@@ -36,6 +36,6 @@
     <meta name="viewport" content="width=device-width" />
   </head>
 
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:_partials-head.html -->" | safeHTML }}
 {{- end -}}

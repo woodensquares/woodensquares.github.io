@@ -1,4 +1,4 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:partials/terms_iterate.html -->" | safeHTML }}
 {{- end -}}
 {{ $whatname := ($.Scratch.Get "whatname") }}
@@ -23,7 +23,7 @@
     </ul> 
   </div>
 </div>
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:partials/terms_iterate.html -->" | safeHTML }}
 {{- end -}}
 

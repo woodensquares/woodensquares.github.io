@@ -1,11 +1,11 @@
 {{ define "main" }}
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:post/single.html -->" | safeHTML }}
 {{- end -}}
   {{ partial "header_single_post" . }}
   {{ partial "single_post" . }}
   {{ partial "copyright" . }}
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:post/single.html -->" | safeHTML }}
 {{- end -}}
 {{ end }}

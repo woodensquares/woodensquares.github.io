@@ -1,4 +1,4 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:about/single.html -->" | safeHTML }}
 {{- end -}}
 {{ partial "head" . }}
@@ -19,6 +19,6 @@
     {{ partial "footer" . }}
 </div>
 </body>
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:about/single.html -->" | safeHTML }}
 {{- end -}}

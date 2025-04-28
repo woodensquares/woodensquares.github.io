@@ -1,4 +1,4 @@
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: start:partials/copyright.html -->" | safeHTML }}
 {{- end -}}
 <div class="pagination">  
@@ -8,6 +8,6 @@
   </div> 
   <div class="right"><br /></div> 
 </div>  
-{{ if .Site.IsServer }}
+{{ if hugo.IsServer }}
 {{ "<!-- HDEBUG: end:partials/copyright.html -->" | safeHTML }}
 {{- end -}}
