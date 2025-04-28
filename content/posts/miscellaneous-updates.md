@@ -6,14 +6,14 @@ tags = [
     "site",
     "debian",
 ]
-date = "2023-01-06T14:52:15-06:00"
+date = "2025-04-27T12:30:15-06:00"
 categories = [
     "Site",
     "Debian",
 ]
 shorttitle = "Miscellaneous updates"
 changelog = [ 
-    "Initial release - 2023-01-06",
+    "Initial release - 2025-04-27",
 ]
 +++
 
