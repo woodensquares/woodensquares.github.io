@@ -1,0 +1,55 @@
+# hugo v0.105.0-0e3b42b4a9bdeb4d866210819fc6ddcf51582ffa+extended linux/amd64 BuildDate=2022-10-28T12:29:05Z
+
+baseURL = "/"
+title = "WoodenSquares"
+languageCode = "en-us"
+paginate = "5"
+disqusShortname = ""
+googleAnalytics = ""
+uglyurls = true
+enableRobotsTXT = true
+pygmentsCodeFences = true
+pygmentsUseClasses = true
+footnotereturnlinkcontents = "↩"
+preserveTaxonomyNames = true
+
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
+
+[markup]
+  [markup.tableOfContents]
+    endLevel = 4
+    ordered = false
+    startLevel = 2
+
+  # Allow embedded html
+  [markup.goldmark.renderer]
+    unsafe = true
+
+[params]
+    author = "WoodenSquares"
+    site_description = ""
+    date_format = "2006-01-02"
+
+[[params.navbar]]
+    position = 1
+    label  = "Archives"
+    link   = "/archives.html"
+
+[[params.navbar]]
+    position = 2
+    label  = "Categories"
+    link   = "/categories.html"
+
+[[params.navbar]]
+    position = 3
+    label  = "Tags"
+    link   = "/tags.html"
+
+[[params.navbar]]
+    position = 4
+    label  = "About"
+    link   = "/pages/about.html"
+
+

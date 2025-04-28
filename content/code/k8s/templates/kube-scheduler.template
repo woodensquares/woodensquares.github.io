@@ -1,0 +1,21 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /etc/kubernetes/ssl/ca.pem
+    server: https://${master}:8443
+  name: etcd.local
+contexts:
+- context:
+    cluster: etcd.local
+    user: kube-scheduler
+  name: etcd.local
+current-context: etcd.local
+kind: Config
+preferences: {}
+users:
+- name: kube-scheduler
+  user:
+    as-user-extra: {}
+    client-certificate: /etc/kubernetes/ssl/kube-scheduler.pem
+    client-key: /etc/kubernetes/ssl/kube-scheduler-key.pem
+    token: ${token}

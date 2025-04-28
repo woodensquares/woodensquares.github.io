@@ -1,0 +1,8 @@
+<!-- From https://discourse.gohugo.io/t/how-to-customise-tables/15661/24 -->
+
+{{ $htmlTable := .Inner | markdownify }}
+{{ $class := .Get 0 }}
+{{ $old := "<table>" }}
+{{ $new := printf "<table class=\"%s\">" $class }}
+{{ $htmlTable := replace $htmlTable $old $new }}
+{{ $htmlTable | safeHTML }}

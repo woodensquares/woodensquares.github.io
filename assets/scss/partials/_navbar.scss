@@ -1,0 +1,100 @@
+@use 'variables' as var;
+@use 'mixins' as mixins;
+
+.page-navbar-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  background: linear-gradient(to bottom, var.$nav-gradient-start, var.$nav-gradient-end);
+
+  .page-navbar-home {
+    margin-top: 0.25rem;
+    margin-left: 0.25rem;
+  }
+
+  .page-navbar-other {
+    margin-right: 0.25rem;
+    margin-top: 0.25rem;
+
+    .nav-Toggle {
+      position: absolute;
+      cursor: pointer;
+      margin: 0 1rem;
+      right: 0;
+
+      svg {
+        width: 1.5rem;
+        fill: var.$nav-foreground;
+      }
+
+      .close {
+        display: none;
+      }
+
+      .menu {
+        margin-top: 0.2rem;
+      }
+    }
+
+    .nav-Checkbox {
+      display: none;
+    }
+
+    .page-navbar-items {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-evenly;
+      padding-bottom: 1rem;
+      gap: 1rem;
+      margin: 0.5rem 1.5rem 0 0;
+
+      li {
+        display: block;
+        list-style-type: none;
+        letter-spacing: normal;
+        line-height: 0;
+        margin: 0.3rem 3rem 0.25rem 0;
+        text-align: center;
+
+        a {
+          @include mixins.link-color(var.$nav-foreground, var.$bread-bcrhover, var.$midpoint, var.$nav-foreground);
+          text-decoration: none;
+        }
+      }
+    }
+  }
+}
+
+// Show the
+#nav-Checkbox:checked ~ ul.page-navbar-items li {
+  display: none;
+}
+
+// Button on/off from hamburger to x
+#nav-Checkbox:checked ~ label.nav-Toggle .close {
+  display: block;
+}
+
+#nav-Checkbox:checked ~ label.nav-Toggle .menu {
+  display: none;
+}
+
+// Display on wide screens, horizontal
+@media only screen and (min-width: var.$bkpt_md) {
+  #nav-Checkbox:checked ~ ul.page-navbar-items li {
+    display: flex;
+  }
+  .page-navbar-container {
+    .page-navbar-other {
+      .nav-Toggle {
+        display: none;
+      }
+
+      .page-navbar-items {
+        flex-direction: row;
+        padding: 0;
+        gap: 0.5rem;
+      }
+    }
+  }
+}

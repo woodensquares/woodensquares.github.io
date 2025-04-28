@@ -1,0 +1,9 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/header_title.html -->" | safeHTML }}
+{{- end -}}
+{{ partial "navbar-pre" . }}
+	<li><em><span class="current" title="{{ .Title }}">{{ .Title }}</span></em></li>
+{{ partial "navbar-post" . }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:partials/header_title.html -->" | safeHTML }}
+{{- end -}}

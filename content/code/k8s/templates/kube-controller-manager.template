@@ -1,0 +1,21 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /etc/kubernetes/ssl/ca.pem
+    server: https://${master}:8443
+  name: etcd.local
+contexts:
+- context:
+    cluster: etcd.local
+    user: kube-controller-manager
+  name: etcd.local
+current-context: etcd.local
+kind: Config
+preferences: {}
+users:
+- name: kube-controller-manager
+  user:
+    as-user-extra: {}
+    client-certificate: /etc/kubernetes/ssl/kube-controller-manager.pem
+    client-key: /etc/kubernetes/ssl/kube-controller-manager-key.pem
+    token: ${token}

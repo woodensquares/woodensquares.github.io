@@ -1,0 +1,27 @@
+<div class="terminal">
+{{- if isset .Attributes "title" -}}
+  <div class="titlebar">{{ .Attributes.title }}</div>
+{{- end -}}
+{{- $stuff := .Inner | safeHTML }}
+{{- $lines := split $stuff "\n" }}
+{{- range $i, $l := $lines }}
+    {{- if hasPrefix $l "!#" -}}
+      <div class="comment">{{ substr $l 2 }}</div>
+    {{- else if hasPrefix $l "!!" -}}
+      {{- $prompt := split $l "!!" }}
+      {{- $user := index $prompt 1 }}
+      <div class="user">
+        <span class="{{ if (eq $user "root") }}root{{ else }}user{{ end }}prompt">{{ $user }}@{{ index $prompt 2 }}</span><span class="sep">:</span><span class="path">{{ index $prompt 3 }}</span> <span class="command">{{ if (eq $user "root") }}#{{ else }}${{ end }} {{ index $prompt 4 }}</span>
+      </div>
+    {{- else if hasPrefix $l "!." -}}
+      <div class="dotdotcontainer">
+        <hr class="dotdot"/>
+      </div>
+    {{- else if hasPrefix $l "  " -}}
+      <pre>{{ substr $l 2}}</pre>
+    {{- else -}}
+      {{ errorf "Bad string %s in the terminal template" $l }}
+    {{- end -}}
+{{- end -}}
+
+  </div>

@@ -1,0 +1,110 @@
+// https://github.com/brycewray/hugo_site/blob/main/assets/scss/partials/_variables.scss
+// https://www.wiggy.net/posts/hugo-dark-mode/
+// https://www.kenmuse.com/blog/adopting-a-dark-theme-in-hugo
+
+:root {
+    // Main
+    --background: #ffffff;
+    --foreground: #000000;
+
+    // img boxes
+    --midpointlight: #dddddd;
+    --midpointdark: #bbbbbb;
+
+    // tables
+    --table-stripelight: #eeeeee;
+    --table-stripedark: #dddddd;
+    --table-headerbg: #04AA6D;
+    --table-headerfg: #eeeeee;
+
+    // Navbar
+    --nav-foreground: #eeeeee;
+    --nav-gradient-end: #000000;
+    --nav-gradient-start: #333333;
+
+    --bread-bcrinactive: #444444;
+    --bread-bcrinactive-dark: #222222;
+    --bread-bcrinactive-text: #f0f0f0;
+    --bread-bcrinactive-sep: #999;
+    --bread-bcrhover: #7c7;
+    --bread-bcrhover-dark: #5b5;
+    --bread-bcrhover-text: #fff;
+    --bread-bcrhover-sep: #777;
+    --bread-bcractive: #444;
+    --bread-bcractive-dark: #222;
+    --bread-bcractive-text: #eee;
+    --bread-bcractive-sep: #777;
+    --bread-bcrcurrent-text: #fff;
+
+    @media (prefers-color-scheme: dark) {
+        --background: #000000;
+        --foreground: #cccccc;
+
+        --midpointlight: #777777;
+        --midpointdark: #aaaaaa;
+
+        --nav-gradient-end: #555555;
+        --nav-gradient-start: #333333;
+
+        --bread-bcrcurrent-text: #ddd;
+
+        --table-stripelight: #444444;
+        --table-stripedark: #222222;
+        --table-headerbg: #04776D;
+        --table-headerfg: #cccccc;
+
+    }
+}
+
+$background: var(--background);
+$midpoint: var(--midpoint);
+$midpointlight: var(--midpointlight);
+$midpointdark: var(--midpointdark);
+$foreground: var(--foreground);
+$nav-foreground: var(--nav-foreground);
+$nav-gradient-start: var(--nav-gradient-start);
+$nav-gradient-end: var(--nav-gradient-end);
+
+$table-stripelight: var(--table-stripelight);
+$table-stripedark: var(--table-stripedark);
+$table-headerbg: var(--table-headerbg);
+$table-headerfg: var(--table-headerfg);
+
+
+$bread-bcrinactive: var(--bread-bcrinactive);
+$bread-bcrinactive-dark: var(--bread-bcrinactive-dark);
+$bread-bcrinactive-text: var(--bread-bcrinactive-text);
+$bread-bcrinactive-sep: var(--bread-bcrinactive-sep);
+$bread-bcrhover: var(--bread-bcrhover);
+$bread-bcrhover-dark: var(--bread-bcrhover-dark);
+$bread-bcrhover-text: var(--bread-bcrhover-text);
+$bread-bcrhover-sep: var(--bread-bcrhover-sep);
+$bread-bcractive: var(--bread-bcractive);
+$bread-bcractive-dark: var(--bread-bcractive-dark);
+$bread-bcractive-text: var(--bread-bcractive-text);
+$bread-bcractive-sep: var(--bread-bcractive-sep);
+$bread-bcrcurrent-text: var(--bread-bcrcurrent-text);
+
+//$sans-serif: "Libre Franklin", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+//$twitter-sans-serif: "Helvetica Neue", Helvetica, Arial, sans-serif;
+//$serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+//$monospaced: "SF Mono", SFMono-Regular, ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+// sizes
+$font-tiny: 0.5rem;
+$font-xsmall: 0.625rem;
+$font-small: 0.75rem;
+$font-base: 1rem;
+$font-large: 1.5rem;
+$font-xl: 2rem;
+$font-2xl: 2.5rem;
+$baseline: 1.5rem;
+
+// breakpoints
+$bkpt_sm: 640px;
+$bkpt_md: 768px;
+$bkpt_ml: 960px;
+$bkpt_lg: 1024px;
+$bkpt_xl: 1280px;
+$bkpt_2xl: 1536px;
+$bkpt_3xl: 1920px;

@@ -1,0 +1,97 @@
+@use 'variables' as var;
+
+.listpage-container {
+  position: center;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  width: 100%;
+  max-width: 80rem;
+
+  @media (prefers-color-scheme: dark) {
+    .logo {
+      filter: brightness(65%);
+    }
+  }
+
+  .listpage-demileader {
+    font-size: var.$font-2xl;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .yearentry {
+    font-size: var.$font-large;
+  }
+
+  .monthentry {
+    text-align: center;
+  }
+
+  .yearcontainer {
+    margin-bottom: 4rem;
+  }
+  .ulentries {
+    padding: 0;
+    overflow-x: hidden;
+    list-style: none;
+    font-size: var.$font-large;
+
+    li {
+      margin-bottom: 2rem;
+
+      &:before {
+        float: left;
+        width: 0;
+        white-space: nowrap;
+        content: ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . " ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . " ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . " ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . " ". . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . "
+      }
+    }
+
+    span {
+      &:first-child {
+        padding-right: 0.5rem;
+        background: var.$background;
+      }
+
+      + span {
+        float: right;
+        padding-left: 1.5rem;
+        background: var.$background;
+      }
+
+      img {
+        vertical-align: middle;
+        width: 0;
+        height: 0;
+        visibility: hidden;
+        display: inline;
+      }
+
+      a {
+        color: var.$foreground;
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: var.$bread-bcrhover-dark;
+      }
+    }
+
+    @media only screen and (min-width: var.$bkpt_md) {
+      span {
+        img {
+          width: 2.5rem;
+          height: 2.5rem;
+          visibility: visible;
+        }
+      }
+    }
+  }
+
+  .compact {
+    li {
+      margin-bottom: 0.75rem;
+    }
+  }
+
+}

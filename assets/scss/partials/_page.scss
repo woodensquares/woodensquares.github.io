@@ -1,0 +1,126 @@
+@use 'variables' as var;
+@use 'mixins' as mixins;
+
+body {
+  font-family: 'Lato', 'DejaVu Sans', sans-serif;
+  font-size: var.$font-base;
+  line-height: var.$baseline;
+  background: var.$background;
+  color: var.$foreground;
+}
+
+.page-global-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.page-container {
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  flex-direction: row;
+}
+
+.page-container {
+  .articlecontainer {
+    position: center;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    max-width: 80rem;
+
+    a {
+      @include mixins.link-color(#686, var.$bread-bcrhover-dark, #888, #999);
+      text-decoration: none;
+    }
+
+    p {
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      margin-top: 1.5rem;
+      margin-bottom: 1.0rem;
+    }
+
+    .footnotes {
+      list-style-position: inside;
+
+      p {
+        display: inline;
+      }
+    }
+
+    .changelogcontainer {
+      font-size: var.$font-tiny;
+      line-height: var.$font-tiny;
+      text-align: right;
+
+      .changelogulentries {
+        list-style-type: none;
+      }
+    }
+
+    .about-leader {
+      font-size: var.$font-xl;
+      margin-top: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .about-authorlogo {
+      img {
+        @include mixins.img-box();
+
+        width: 4em;
+        height: 4em;
+
+        float: left;
+        border: 1px solid white;
+        padding: 3px;
+        margin-right: 1em;
+      }
+    }
+
+    @media only screen and (max-width: var.$bkpt_md) {
+      .about-leader {
+        font-size: var.$font-base;
+        margin-top: 1.0rem;
+        margin-bottom: 0.75rem;
+        font-weight: bolder;
+      }
+
+      .article-container {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+      }
+    }
+  }
+}
+
+.pagination {
+  display: flex;
+  flex-direction: row;
+  padding-left: 4rem;
+  padding-right: 4rem;
+
+  a {
+    @include mixins.link-color(black, #7c7, #888, black);
+    color: black;
+    text-decoration: none;
+  }
+
+  .left {
+    flex: none;
+    font-size: var.$font-large;
+  }
+
+  .center {
+    text-align: center;
+    font-size: var.$font-small;
+    flex-grow: 1;
+  }
+
+  .right {
+    flex: none;
+    font-size: var.$font-large;
+  }
+}

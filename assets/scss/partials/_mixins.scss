@@ -1,0 +1,20 @@
+@use 'variables' as var;
+
+@mixin link-color($default, $hover: false, $active: false, $visited: false) {
+  color: $default;
+  @if $active {
+    &:active {
+      color: $active; } }
+  @if $visited {
+    &:visited {
+      color: $visited; } }
+  @if $hover {
+    &:hover {
+      color: $hover; } }
+}
+
+@mixin img-box() {
+    background: linear-gradient(var.$background, var.$midpointlight);
+    box-shadow: 0 0 0.5rem var.$midpointdark;
+    border-radius: 0.25rem;
+}

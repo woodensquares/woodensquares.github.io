@@ -1,0 +1,42 @@
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - -###${home}/.ssh/id_rsa.pub
+
+flannel: ~
+
+systemd:
+  units:
+    - name: systemd-timesyncd.service
+      mask: true
+    - name: ntpd.service
+      enable: true
+${flanneld}
+    - name: docker.service
+      enabled: true
+      dropins:
+        - name: 50-opts.conf
+          contents: |
+            [Unit]
+            Requires=flanneld.service
+            After=flanneld.service
+    - name: kubelet.service
+      enabled: true
+      contents: |
+        [Service]
+        Restart=always
+        RestartSec=10
+        Environment=KUBELET_IMAGE_TAG=${hypertag}_coreos.0
+        ExecStart=/usr/lib/coreos/kubelet-wrapper \
+                --require-kubeconfig \
+                --kubeconfig=/etc/kubernetes/cfg/kubelet.cfg \
+                --register-node=true \
+                --allow-privileged=true \
+                --cluster-dns=10.199.0.10 \
+                --cluster-domain=cluster.local \
+                --pod-manifest-path=/etc/kubernetes/manifests \
+                --enable-custom-metrics=true \        
+                --v=2
+        [Install]
+        WantedBy=multi-user.target

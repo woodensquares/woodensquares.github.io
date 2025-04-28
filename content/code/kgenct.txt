@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+from __future__ import print_function
+import argparse
+import sys
+
+parser = argparse.ArgumentParser(
+    description='Add certificates to Ignition configuration files.')
+parser.add_argument('-t', '--template', metavar='T', type=str, required=True,
+                    help='template file to use')
+
+args = parser.parse_args()
+
+if not args.template.endswith(".ct.tmpl"):
+    print ("The template file should end with .ct.tmpl")
+    sys.exit(-1)
+
+with open(args.template) as f:
+    contents = f.read().split('\n')
+
+with open(args.template[:-len(".tmpl")], "w") as f:
+    for x in contents:
+        try:
+            col = x.index("###")
+            colspace = " " * (col - 1)
+        except Exception:
+            f.write(x + "\n")
+            continue
+
+        subfile = x[col + 3:]
+        with open(subfile) as c:
+            subcontents = c.read().split('\n')
+
+        if x[col - 1] == '|':
+            for cline in subcontents:
+                f.write(colspace + cline + "\n")
+        elif x[col - 1] == '-':
+            f.write(x[:(col - 1)] + "".join(subcontents) + "\n")
+        else:
+            print("Unknown qualifier in %s", x)
+            sys.exit(-1)

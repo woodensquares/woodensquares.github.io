@@ -1,0 +1,27 @@
+# For etcd v2
+export ETCDCTL_CA_FILE=/etc/ssl/certs/etcd/ca.pem
+export ETCDCTL_CERT_FILE=/etc/ssl/certs/etcd/client.pem
+export ETCDCTL_KEY_FILE=/etc/ssl/certs/etcd/client-key.pem
+          
+# For etcd v3
+export ETCDCTL_CACERT=/etc/ssl/certs/etcd/ca.pem
+export ETCDCTL_CERT=/etc/ssl/certs/etcd/client.pem
+export ETCDCTL_KEY=/etc/ssl/certs/etcd/client-key.pem
+
+# For both
+export ETCDCTL_ENDPOINTS=${etcdiplist}
+         
+# Choose which API to use, v2 for flannel, v3 for apiserver
+export ETCDCTL_API=2
+          
+if [[ $$- != *i* ]] ; then
+  return
+fi
+
+# For etcd via curl
+export CURL_EP=https://$$(hostname):2379
+function cte() { curl -k /root/.curlrc.etcd "$$CURL_EP$$@"; }
+
+# For K8s via curl
+export K8S_EP=https://192.168.100.10:8443
+function ctk() { curl -k /root/.curlrc.k8s "$$CURL_EP$$@"; }

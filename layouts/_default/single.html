@@ -1,0 +1,47 @@
+{{ define "main" }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:_default/single.html -->" | safeHTML }}
+{{- end -}}
+
+{{ partial "header_single_post" . }}
+
+{{ $cat := index .Params.categories 0}}
+<div class="page-container">
+  <div class="listpage-container"> 
+    <div class="article-title">
+      <a href="/categories/Site.html"><img src="/static/images/Site.jpg" alt="{{ $cat }}"/></a>
+      <div class="titlecontainer">
+	<span class="titletext">{{ .Title }}</span>
+	<span class="tagstext">
+	  <br />first published on {{ .Date.Format "Jan 2, 2006" }}
+          {{ if isset .Params "modified" }}
+          -&nbsp;last modified on {{ dateFormat  "Jan 2, 2006" (printf "%s" .Params.modified) }}
+	  {{ end }}
+	</span>
+      </div>
+    </div>
+
+    <div class="articlecontainer">
+      {{ .Content }}
+    </div>
+
+    {{ if isset .Params "changelog" }}
+      {{ $logLen := len .Params.changelog }}
+      {{ if gt $logLen 0 }}     
+        <div class="changelogcontainer">  
+          <span class="changelogtitle">Changelog:</span>
+          <ul class="changelogulentries">
+            {{ range $k, $v := .Params.changelog }}
+              <li>{{ . }}</li>
+            {{ end }}
+          </ul>
+          &nbsp;
+        </div>      
+    {{ end }}
+  {{ end }}
+  {{ partial "copyright" . }}
+
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:_default/single.html -->" | safeHTML }}
+{{- end -}}
+{{ end }}

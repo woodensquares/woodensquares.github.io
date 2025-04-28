@@ -1,0 +1,149 @@
+function kgencert () {
+    local node=$1
+    local ip=$2
+    local pwd
+
+    pwd=$(pwd)
+    base=$(basename "$pwd")
+
+    if [[ -z $XENDIR ]]; then
+        echo XENDIR must be set
+        return 1
+    fi
+
+    if [[ $pwd != "$XENDIR/guests/$base" ]]; then
+        echo You should be in a guests subdirectory!
+        return 1
+    fi
+
+    if [[ ! -f "$XENDIR/guests/$base/$node.cfg" ]]; then
+        echo "$node.cfg" not found!
+        return 1
+    fi
+
+    if [[ -z $ip ]]; then
+        if [[ ! -f /var/lib/dnsmasq/virbr1/hostsfile ]]; then
+            echo Missing dnsmasq hosts file and no IP passed
+            return 1
+        fi
+
+        mac=$(awk "\$1 == \"vif\" { gsub(/'mac=/, \"\"); gsub(/,*model.*/, \"\"); print \$4 }" < "$1.cfg")
+        ip=$(grep "$mac" /var/lib/dnsmasq/virbr1/hostsfile)
+
+        if [[ -z $ip ]]; then
+            echo The node\'s mac address "$mac" is not present in the dnsmasq hosts file
+            return 1
+        fi
+
+        IFS=',' read -ra IPS <<< "$ip"
+        ip=${IPS[1]}
+    fi
+
+    mkdir -p ./certs
+
+    if [[ ! -f ./certs/ca-csr.json ]]; then
+        cat > ./certs/ca-csr.json <<EOF
+{
+    "CN": "$base cluster CA",
+    "key": {
+        "algo": "rsa",
+        "size": 2048
+    },
+    "names": [
+        {
+            "O": "$(hostname) clusters",
+            "OU": "The $base cluster"
+        }
+    ]
+}
+EOF
+    fi
+
+    if [[ ! -f ./certs/ca-config.json ]]; then
+        cat > ./certs/ca-config.json <<EOF
+{
+    "signing": {
+        "default": {
+            "expiry": "43800h"
+        },
+        "profiles": {
+            "server": {
+                "expiry": "43800h",
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "server auth"
+                ]
+            },
+            "client": {
+                "expiry": "43800h",
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "client auth"
+                ]
+            },
+            "peer": {
+                "expiry": "43800h",
+                "usages": [
+                    "signing",
+                    "key encipherment",
+                    "server auth",
+                    "client auth"
+                ]
+            }
+        }
+    }
+}
+EOF
+    fi
+
+    cd certs || return
+
+    ca="$base-ca.pem"
+    cak="$base-ca-key.pem"
+    if [[ ! -f $ca || ! -f $cak ]]; then
+        # Generate the cluster CA, no need to remove existing .pem certificate
+        # files as they will be overwritten.
+        cfssl gencert -initca ca-csr.json | cfssljson -bare "$base-ca" -
+        rm -f "$base-ca.csr"
+    fi
+
+    # Now generate the cluster certificates
+    pre='{"CN":"'$base'-'$node
+    post='","hosts":[""],"key":{"algo":"rsa","size":2048}}'
+    echo "$pre-server$post" | cfssl gencert \
+                                    -ca="$ca" -ca-key="$cak" \
+                                    -config=ca-config.json -profile=server \
+                                    -hostname="$ip,$base-$node" \
+                                    - | cfssljson -bare "$base-$node-server"
+    rm -f "$base-$node-server.csr"
+    echo "$pre-peer$post" | cfssl gencert \
+                                  -ca="$ca" -ca-key="$cak" \
+                                  -config=ca-config.json -profile=peer \
+                                  -hostname="$ip,$base-$node" \
+                                  - | cfssljson -bare "$base-$node-peer"
+    rm -f "$base-$node-peer.csr"
+
+    echo "$pre-client$post" | cfssl gencert \
+                                    -ca="$ca" -ca-key="$cak" \
+                                    -config=ca-config.json -profile=client \
+                                    - | cfssljson -bare "$base-$node-client"
+    rm -f "$base-$node-client.csr"
+    cd ..
+}
+
+function _kgencert()
+{
+    local cur prev
+
+    COMPREPLY=()
+    cur=$(_get_cword)
+    _expand || return 0
+
+    # this is idiomatic compgen as far as I can see
+    # shellcheck disable=SC2207
+    COMPREPLY=( $(compgen -f -X '!*.cfg' -- "$cur" | sed -e 's/\.cfg//' ) )
+    return 0
+}
+complete -F _kgencert kgencert

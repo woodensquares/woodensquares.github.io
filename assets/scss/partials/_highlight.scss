@@ -1,0 +1,39 @@
+.highlight, {
+  background: #fffbf2;
+  box-shadow: 0 0 0.5rem #bbb;
+  border-radius: 0.25rem;
+  margin-left: 2rem;
+  margin-right: 2rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+
+  .lntable {
+    background: #fff7e7;
+    padding-right: 1rem;
+    padding-left: 0.5rem;
+    width: 100%;
+
+    td:nth-child(1) {
+      vertical-align: top;
+      background-color: #fff7e7;
+
+      .ln {
+        margin-right: 0.2rem;
+        padding: 0 0.2rem 0 0.2rem;
+        display: block;
+      }
+
+      .lnt {
+        margin-right: 0.2rem;
+        padding: 0 0.2rem 0 0.2rem;
+        display: block;
+      }
+    }
+
+    td:nth-child(2) {
+      border-spacing: 0;
+      vertical-align: top;
+      background-color: #fffbf2;
+    }
+  }
+}

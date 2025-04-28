@@ -1,0 +1,212 @@
+#!/usr/bin/env python
+# Helper to move windows around i3 and/or switch to them.
+#
+# This script depends on i3 workspaces being named 1,2,3,4,5 e/l/c/r (for a 4
+# screen setup, where 'e' is an 'extra' screen) as well as virtualbox
+# workspaces named vmname_left_ vmname_center_ vmname_right_ etc. assigned to
+# the specified screens (the _ is because I have a small patch to i3 that does
+# not display workspaces ending with _ see
+# https://github.com/i3/i3/issues/2333 for the issue discussing this and
+# https://gist.github.com/woodensquares/c1afc4fb56b4d9d21fa261fb4b28b092 for
+# the small patch I am using)
+from __future__ import print_function
+
+import i3ipc
+import getopt
+import subprocess
+import sys
+
+
+def usage():
+    print("\n-h help")
+    print("-o / --output VM to focus")
+    print("-s / --screen VM screen to focus on")
+    print("-f / --flip flip the VM (or emacs) to the screen at the left")
+    print("-g / --glip flip the VM (or emacs) to the screen at the right")
+    print("-a / --assign move the VM (or emacs) to the specified screen")
+    print("-r / --run start the VM specified in -o if it's not running")
+    print("-e / --emacs focus Emacs")
+    print("-v / --verbose print debugging information\n")
+    print("One, and only one, of -o / -e / -f / -g / -a are mandatory")
+    print("Note -f and -g will shift a window only on l/c/r.")
+    print("-r / --run depends on $HOME / bin / vb being available")
+
+
+def main():
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "vhfga:o:s:er", [
+            "verbose", "help", "flip", "glip", "assign=", "output=",
+            "screen=", 'emacs', 'run'])
+    except getopt.GetoptError as err:
+        print(str(err))
+        usage()
+        sys.exit(2)
+
+    output = None
+    emacs = False
+    run = False
+    verbose = False
+    flip = False
+    glip = False
+    assign = False
+    screen = ""
+    exclusive = 0
+    for o, a in opts:
+        if o in ("-s", "--screen"):
+            screen = a
+        elif o in ("-h", "--help"):
+            usage()
+            sys.exit()
+        elif o in ("-o", "--output"):
+            output = a
+            exclusive += 1
+        elif o in ("-v", "--verbose"):
+            verbose = True
+        elif o in ("-e", "--emacs"):
+            emacs = True
+            exclusive += 1
+        elif o in ("-r", "--run"):
+            run = True
+        elif o in ("-f", "--flip"):
+            flip = True
+            exclusive += 1
+        elif o in ("-g", "--glip"):
+            glip = True
+            exclusive += 1
+        elif o in ("-a", "--assign"):
+            assign = a
+            exclusive += 1
+        else:
+            assert False, "unhandled option"
+
+    if exclusive != 1:
+        print("One, and only one, of -o / -e / -f / -g / -a is required")
+        usage()
+        sys.exit(-1)
+
+    conn = i3ipc.Connection()
+
+    workspaces = conn.get_workspaces()
+    current_workspace = filter(lambda w: w.focused, workspaces)[0]
+    cname = current_workspace.name
+    current_window = conn.get_tree().find_focused()
+
+    # If we are flipping we don't know what we are focusing, obviously
+    # all this relies on the workspace naming convention we have
+    if flip or glip or assign:
+        if cname.startswith('emacs'):
+            if assign:
+                dest_workspace = assign[0]
+            elif cname.endswith('e'):
+                dest_workspace = 'r' if flip else 'l'
+            elif cname.endswith('c'):
+                dest_workspace = 'l' if flip else 'c'
+            elif cname.endswith('l'):
+                dest_workspace = 'r' if flip else 'l'
+            else:
+                dest_workspace = 'c' if flip else 'r'
+
+            dest_workspace = "emacs" + dest_workspace
+        elif (len(cname) == 2 and
+              cname[0] in ('1', '2', '3', '4', '5') and
+              cname[1] in ('e', 'l', 'r', 'c')):
+            # Are we on a normal e/l/c/r workspace, if so move to the same
+            # workspace number on the other monitor, note no flip ending on
+            # 'e' as that monitor is not always on.
+            if assign:
+                dest_workspace = assign[0]
+            elif cname.endswith('e'):
+                dest_workspace = 'r' if flip else 'l'
+            elif cname.endswith('c'):
+                dest_workspace = 'l' if flip else 'r'
+            elif cname.endswith('l'):
+                dest_workspace = 'r' if flip else 'c'
+            else:
+                dest_workspace = 'c' if flip else 'l'
+
+            dest_workspace = cname[0] + dest_workspace
+        else:
+            # let's see if we are on a VM workspace, same here no flipping
+            # to the extra screen, only from it.
+            w = cname.split('_')
+            if (len(w) != 3 or
+                w[1] not in ('extra', 'left', 'right', 'center')
+                    or w[2] != ''):
+
+                if verbose:
+                    print("Not emacs, not a vm workspace, not flipping %s" % w)
+                sys.exit(-1)
+
+            # Note VM workspaces end with _ to skip from the pager
+            if assign:
+                dest_workspace = '_' + assign
+            elif cname.endswith('_extra_'):
+                dest_workspace = '_right' if flip else '_left'
+            elif cname.endswith('_center_'):
+                dest_workspace = '_left' if flip else '_right'
+            elif cname.endswith('_left_'):
+                dest_workspace = '_right' if flip else '_center'
+            else:
+                dest_workspace = '_center' if flip else '_left'
+
+            dest_workspace = w[0] + dest_workspace + "_"
+
+        conn.command('[id="%d"] move window to workspace %s' %
+                     (current_window.window, dest_workspace))
+        conn.command('[id="%d"] focus' % current_window.window)
+        sys.exit(0)
+
+    if emacs:
+        candidate = conn.get_tree().find_classed('Emacs')
+    else:
+        # Note that if the VM is running a snapshot its name will be
+        # vmname (snapshotname) [Running]
+        # so use a regex, this also covers the case when a vm has a
+        # name that is a subset of another vm's name
+        if screen == "":
+            candidate = conn.get_tree().find_named(
+                '^%s [^[]*\[Running\] - Oracle VM VirtualBox.*$' % output)
+        else:
+            screen = " : %s" % screen
+            candidate = conn.get_tree().find_named(
+                '^%s [^[]*\[Running\] - Oracle VM VirtualBox%s$' %
+                (output, screen))
+
+    if len(candidate) == 0:
+        if run:
+            subprocess.call(['$HOME/bin/vb %s' % output], shell=True)
+        else:
+            if verbose:
+                print("VM %s not found" % output)
+            sys.exit(-1)
+
+    else:
+        # If we have more than one back & forth does not make much sense
+        # as it'd always be the same vm workspace on the other screen
+        if len(candidate) == 2 or len(candidate) == 3:
+            if verbose:
+                print("Focus the windows no matter what workspace they are on")
+            for x in candidate:
+                conn.command('[id="%d"] focus' % x.window)
+        elif len(candidate) == 1:
+            if (candidate[0].workspace().name == current_workspace.name):
+                if verbose:
+                    print("Already on the correct workspace, ")
+                    print("go to the previous workspace")
+                    print("assuming workspace_back_and_forth is configured")
+                conn.command('workspace %s' % current_workspace.name)
+            else:
+                if verbose:
+                    print("Not on the correct workspace, let's switch")
+                conn.command('[id="%d"] focus' % candidate[0].window)
+        else:
+            print("Too many windows match")
+            if verbose:
+                for x in candidate:
+                    print("Name: %s on workspace %s" % (
+                        x.name, x.workspace().name))
+            sys.exit(-1)
+
+
+if __name__ == "__main__":
+    main()

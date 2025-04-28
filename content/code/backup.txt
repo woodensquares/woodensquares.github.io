@@ -1,0 +1,107 @@
+#!/bin/bash
+getopt --test > /dev/null
+if [[ $? -ne 4 ]]; then echo "Sorry, not an enhanced getopt." >&2 ; exit 1 ; fi
+
+OPTIONS=f:dchb:ts:
+LONGOPTIONS=filter:,dry-run,checksum,help,backup-to:timestamp,source:
+if ! PARSED=$(getopt -o $OPTIONS -l $LONGOPTIONS -n "$0" -- "$@"); then exit 1; fi
+eval set -- "$PARSED"
+
+while true; do
+    case "$1" in
+        -e|--extended) x="$2" ; shift 2 ;;
+        -s|--source) src="$2" ; shift 2 ;;
+        -b|--backup-to) dest="$2" ; shift 2 ;;
+        -f|--filter) flt="$2" ; shift 2 ;;
+        -d|--dry-run) d=y ; shift ;;
+        -c|--checksum) c=y ; shift ;;
+        -t|--timestamp) t=y ; shift ;;
+        -h|--help)
+            echo "Valid arguments are:
+
+  -s|--source <fromdir>    source for the backup, default is /
+  -b|--backup-to <todir>   destination directory for the backup
+  -t|--timestamp           if set a /yyyy-mm-dd/ directory will be created 
+                           inside the destination and rsynced files will be
+                           put there.
+  -f|--filter <file>       rsync filter file
+  -e|--extended            if included ACLs and extended attributes will be 
+                           backed up 
+  -c|--checksum            if set --checksum will be passed (passing -d and -c 
+                           can be used to verify a backup)
+  -h|--help                prints this message
+
+-b is mandatory. A sample rsync filter file could contain these rules to back
+up one's home directory and /usr/local without VirtualBox VMs starting from 
+a destination of /
+
+filterfile:
+--------
+- /home/luser/.config/VirtualBox/
+- /home/luser/.config/VirtualBox/**
+- /home/luser/VirtualBox VMs/
+- /home/luser/VirtualBox VMs/**
++ /home/
++ /home/luser/
++ /home/luser/**
++ /usr/
++ /usr/local/
++ /usr/local/**
+- *
+
+The first rule that matches is respected by rsync, so in this case first four
+exclude rules would prevent the VirtualBox directories to be rsynced, the next
+three would make the home directory be, the further next three will cover
+/usr/local, and the final would exclude any other file on the system.
+"
+            exit 0
+            ;;
+        --) shift ; break ;;
+        *) echo "Internal error" >&2 ; exit 1 ;;
+    esac
+done
+
+if [[ -z $src ]]; then
+    src="/"
+fi
+
+if [[ $# -ne 0 ]]; then
+    echo "No extra arguments allowed" >&2
+    exit 1
+fi
+
+if [[ -z "$dest" ]]; then
+    echo "The rsync destination is mandatory" >&2
+    exit 1
+fi
+
+
+rsync=()
+if [[ ! -z "$d" ]]; then
+    rsync+=(--dry-run)
+fi
+
+if [[ ! -z "$c" ]]; then
+    rsync+=(--checksum)
+fi
+
+if [[ ! -z "$x" ]]; then
+    rsync+=(-ivaAX)
+else 
+    rsync+=(-iva)
+fi
+
+
+if [[ ! -z "$flt" ]]; then
+    rsync+=(--filter "merge $flt")
+fi
+
+if [[ -z "$t" ]]; then
+    rsync+=("$src" "$dest")
+else
+    if ! mkdir -p "$dest/$(date '+%Y-%m-%d')"; then exit 1 ; fi
+    rsync+=("$src" "$dest/$(date '+%Y-%m-%d')")
+fi 
+
+echo "Executing rsync ${rsync[@]}"
+rsync "${rsync[@]}"

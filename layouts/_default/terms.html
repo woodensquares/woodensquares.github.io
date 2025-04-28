@@ -1,0 +1,21 @@
+{{ define "main" }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:_default/terms.html -->" | safeHTML }}
+{{- end -}}
+
+{{ if (eq .Title "Tags")}}
+  {{ $.Scratch.Set "what" .Site.Taxonomies.tags}}
+  {{ $.Scratch.Set "whatname" "tags"}}
+{{ else }}
+  {{ $.Scratch.Set "what" .Site.Taxonomies.categories}}
+  {{ $.Scratch.Set "whatname" "categories"}}
+{{ end }}
+
+{{ partial "header_title" . }}
+{{ partial "terms_iterate" . }}
+
+{{ partial "copyright" . }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:_default/terms.html -->" | safeHTML }}
+{{- end -}}
+{{ end }}

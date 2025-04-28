@@ -1,0 +1,9 @@
+etcd:
+  name:                        ${guest}-${hostname}
+  listen_client_urls:          https://${hostip}:2379
+  advertise_client_urls:       https://${hostip}:2379
+  listen_peer_urls:            https://${hostip}:2380
+  initial_advertise_peer_urls: https://${hostip}:2380
+  initial_cluster:             ${etcdlist}
+  initial_cluster_token:       ${guest}-token
+  initial_cluster_state:       new

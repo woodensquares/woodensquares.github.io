@@ -1,0 +1,28 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/prev_next_post.html -->" | safeHTML }}
+{{- end -}}
+{{ if and (or .PrevInSection .NextInSection) (not .Params.noprevnext) }}
+<H1>PREV_NEXT_POST</H1>
+<nav id="article-nav">
+    {{ if .PrevInSection }}
+    <a href="{{ .PrevInSection.Permalink }}" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">
+          {{with .Site.Data.l10n.articles.linked_posts.older}}{{.}}{{end}}
+      </strong>
+      <div class="article-nav-title">{{ .PrevInSection.Title }}</div>
+    </a>
+    {{ end }}
+
+    {{ if .NextInSection }}
+    <a href="{{ .NextInSection.Permalink }}" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">
+          {{with .Site.Data.l10n.articles.linked_posts.newer}}{{.}}{{end}}
+      </strong>
+      <div class="article-nav-title">{{ .NextInSection.Title }}</div>
+    </a>
+    {{ end }}
+</nav>
+{{ end }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:partials/prev_next_post.html -->" | safeHTML }}
+{{- end -}}

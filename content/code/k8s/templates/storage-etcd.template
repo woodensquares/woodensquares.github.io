@@ -1,0 +1,44 @@
+${storage}
+    - filesystem: "root"
+      path:       "/etc/ssl/certs/etcd/server.pem"
+      mode:       0640
+      user:
+        name:     "etcd"
+      group:
+        name:     "root"
+      contents:
+        inline: |
+          |###certs/${guest}-${hostname}-server.pem
+
+    - filesystem: "root"
+      path:       "/etc/ssl/certs/etcd/server-key.pem"
+      mode:       0600
+      user:
+        name:     "etcd"
+      group:
+        name:     "root"
+      contents:
+        inline: |
+          |###certs/${guest}-${hostname}-server-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/ssl/certs/etcd/peer.pem"
+      mode:       0640
+      user:
+        name:     "etcd"
+      group:
+        name:     "root"
+      contents:
+        inline: |
+          |###certs/${guest}-${hostname}-peer.pem
+
+    - filesystem: "root"
+      path:       "/etc/ssl/certs/etcd/peer-key.pem"
+      mode:       0600
+      user:
+        name:     "etcd"
+      group:
+        name:     "root"
+      contents:
+        inline: |
+          |###certs/${guest}-${hostname}-peer-key.pem

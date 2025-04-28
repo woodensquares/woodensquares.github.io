@@ -1,0 +1,3 @@
+
+<!-- ttyplayer videos { { < ttyplayer alt="alttext" src="/whereitis" -- name="divid" > } } -->
+<p><tty-player controls {{ .Get "autoplay" | safeHTMLAttr }} {{ .Get "loop" | safeHTMLAttr }} src="{{ .Get "src" }}" id="{{ .Get "name" }}-tty-screencast"></tty-player></p>

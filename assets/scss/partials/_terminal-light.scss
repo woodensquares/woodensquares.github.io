@@ -1,0 +1,91 @@
+@use 'variables' as var;
+
+.terminal, {
+    background: #eee;
+    box-shadow: 0 0 0.5rem #bbb;
+    border-radius: 0.25rem;
+    font-family: monospace;
+    font-size: var.$font-small;
+    line-height: 1.2rem;
+    margin-bottom: 1.5rem;
+    margin-top: 1.5rem;
+
+    .user {
+        width: 100%;
+    }
+
+    .titlebar {
+        font-size: var.$font-xsmall;
+        background: #5577cc;
+        text-align: center;
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    .dotdotcontainer {
+        padding: 0.25rem;
+        .dotdot {
+            margin-left: 1rem;
+            width: 4rem;
+            border: none;
+            border-top: 2px dotted black;
+        }
+    }
+
+    .comment {
+        background: #ccdddd;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        padding-top: 0.1rem;
+        padding-left: 2rem;
+        padding-right: 2rem;
+
+        font-style: italic;
+        color: #000000;
+    }
+
+    .rootprompt {
+        padding-left: 0.5rem;
+        font-weight: bold;
+        color: #ff0000;
+    }
+
+    .luserprompt {
+        padding-left: 0.5rem;
+        font-weight: bold;
+        color: #00cc00;
+    }
+
+    .userprompt {
+        padding-left: 0.5rem;
+        font-weight: bold;
+        color: #00cc00;
+    }
+
+    .command {
+        color: #000000;
+    }
+
+    .sep {
+        color: #ffffff;
+        font-weight: bold;
+    }
+
+    .path {
+        color: #5555ff;
+        font-style: italic;
+    }
+
+    pre {
+        background: #dddddd;
+        font-size: var.$font-small;
+        margin-left: 0.5rem;
+        margin-top: 0;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        color: #222222;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+    }
+}

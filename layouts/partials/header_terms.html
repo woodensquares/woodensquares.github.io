@@ -1,0 +1,21 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/header_terms.html -->" | safeHTML }}
+{{- end -}}
+{{ $whatname := ($.Scratch.Get "whatname") }}
+{{ partial "navbar-pre" . }}
+	<li><a href="/{{ $whatname }}.html" title="{{ $whatname }}">{{($whatname | humanize) }}</a></li>
+
+    {{ if (eq $whatname "tags" )}}
+      {{ $bogus := ( .Title | lower ) }}
+      {{ if (eq $bogus "pfsense" )}}
+        <li><em><span class="current" title="pfSense">pfSense</span></em></li>
+      {{ else }}
+        <li><em><span class="current" title="{{ $bogus }}">{{ $bogus }}</span></em></li>
+      {{ end }}
+    {{ else }}
+      <li><em><span class="current" title="{{ .Title }}">{{ .Title }}</span></em></li>
+    {{ end }}
+{{ partial "navbar-post" . }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:partials/header_terms.html -->" | safeHTML }}
+{{- end -}}

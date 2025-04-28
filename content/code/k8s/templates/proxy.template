@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    scheduler.alpha.kubernetes.io/critical-pod: ""
+  creationTimestamp: null
+  labels:
+    k8s-app: kube-proxy
+    tier: node
+  name: kube-proxy
+  namespace: kube-system
+spec:
+  containers:
+  - name: kube-proxy
+    image: gcr.io/google_containers/hyperkube:${hypertag}
+    command:
+    - /bin/bash
+    - -c
+    - "/proxy
+    --kubeconfig=/etc/kubernetes/cfg/kube-proxy.cfg
+    --proxy-mode=iptables
+    --cluster-cidr=172.16.0.0/16
+    --v=2 2>&1 | /usr/bin/tee /var/log/kubernetes/kube-proxy.log"
+    securityContext:
+      privileged: true
+    volumeMounts:
+    - mountPath: /var/log/kubernetes
+      name: varlog
+    - mountPath: /etc/kubernetes/cfg
+      name: config-kubernetes
+      readOnly: true
+    - mountPath: /etc/kubernetes/ssl
+      name: ssl-certs-kubernetes
+      readOnly: true
+    - mountPath: /etc/ssl/certs
+      name: ssl-certs-host
+      readOnly: true
+  hostNetwork: true      
+  volumes:
+  - hostPath:
+      path: /var/log/kubernetes
+    name: varlog
+  - hostPath:
+      path: /etc/kubernetes/cfg
+    name: config-kubernetes
+  - hostPath:
+      path: /etc/kubernetes/ssl
+    name: ssl-certs-kubernetes
+  - hostPath:
+      path: /usr/share/ca-certificates
+    name: ssl-certs-host

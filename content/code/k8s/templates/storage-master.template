@@ -1,0 +1,91 @@
+${storage}
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/apiserver.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-apiserver.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/apiserver-key.pem"
+      mode:       0600
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-apiserver-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kube-controller-manager.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kube-controller-manager-client.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kube-controller-manager-key.pem"
+      mode:       0600
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kube-controller-manager-client-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kube-scheduler.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kube-scheduler-client.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kube-scheduler-key.pem"
+      mode:       0600
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kube-scheduler-client-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/manifests/apiserver.yaml"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/${hostname}/apiserver.yaml
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/manifests/kube-scheduler.yaml"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/${hostname}/scheduler.yaml
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/cfg/kube-scheduler.cfg"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/${hostname}/kube-scheduler.cfg
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/manifests/kube-controller-manager.yaml"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/${hostname}/controller.yaml
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/cfg/kube-controller-manager.cfg"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/${hostname}/kube-controller-manager.cfg
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/auth/known_tokens.csv"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/known_tokens.csv
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/auth/basic_auth.csv"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/basic_auth.csv

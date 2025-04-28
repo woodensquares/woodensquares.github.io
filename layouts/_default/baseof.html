@@ -1,0 +1,16 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:_default/baseof.html -->" | safeHTML }}
+{{- end -}}
+{{ partial "head" . }}
+
+<body>
+<div class="page-global-container">
+{{ block "main" . }}{{ end }}
+{{ partial "footer" . }}
+</div>
+</body>
+
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:_default/baseof.html -->" | safeHTML }}
+{{- end -}}
+</html>

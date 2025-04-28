@@ -1,0 +1,48 @@
+@use 'variables' as var;
+
+.terminal, {
+    background: #000;
+    box-shadow: 0 0 0.5rem #bbb;
+    .titlebar {
+        background: #8888ff;
+        color: #ffffff;
+    }
+
+    .dotdot {
+        border-top: 2px dotted white;
+    }
+
+    .comment {
+        background: #997777;
+        color: #000000;
+    }
+
+    .rootprompt {
+        color: #ff0000;
+    }
+
+    .luserprompt {
+        color: #00ff00;
+    }
+
+    .userprompt {
+        color: #00ff00;
+    }
+
+    .command {
+        color: #dddddd;
+    }
+
+    .sep {
+        color: #ffffff;
+    }
+
+    .path {
+        color: #bbbbdd;
+    }
+
+    pre {
+        background: #222222;
+        color: #bbbbbb;
+    }
+}

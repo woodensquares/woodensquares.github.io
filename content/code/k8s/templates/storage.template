@@ -1,0 +1,233 @@
+storage:
+  directories:
+    - filesystem: "root"
+      path:       "/etc/ssl/certs/etcd"
+      mode:       0750
+      user:
+        name:     "etcd"
+      group:
+        name:     "root"
+    - filesystem: "root"
+      path:       "/var/log/kubernetes"
+      mode:       0750
+  files:
+    - filesystem: "root"
+      path:       "/etc/hostname"
+      mode:       0644
+      contents:
+        inline: ${guest}-${hostname}
+
+    - filesystem: "root"
+      path:       "/etc/ssl/certs/etcd/ca.pem"
+      mode:       0640
+      user:
+        name:     "etcd"
+      group:
+        name:     "root"
+      contents:
+        inline: |
+          |###certs/${guest}-ca.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/etcd-ca.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-ca.pem
+
+    - filesystem: "root"
+      path:       "/etc/ssl/certs/etcd/client.pem"
+      mode:       0640
+      user:
+        name:     "etcd"
+      group:
+        name:     "root"
+      contents:
+        inline: |
+          |###certs/${guest}-${hostname}-client.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/etcd-client.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-${hostname}-client.pem
+
+    - filesystem: "root"
+      path:       "/etc/ssl/certs/etcd/client-key.pem"
+      mode:       0600
+      user:
+        name:     "etcd"
+      group:
+        name:     "root"
+      contents:
+        inline: |
+          |###certs/${guest}-${hostname}-client-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/etcd-client-key.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-${hostname}-client-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/ca.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-kube-ca.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/ca-key.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-kube-ca-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kubelet-client.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kubelet-client.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kubelet-client-key.pem"
+      mode:       0600
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kubelet-client-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kubelet.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kubelet.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kubelet.key.pem"
+      mode:       0600
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kubelet-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/apiserver.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-apiserver.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/apiserver-key.pem"
+      mode:       0600
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-apiserver-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/cfg/kubelet.cfg"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/${hostname}/kubelet.cfg
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kube-proxy.pem"
+      mode:       0640
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kube-proxy-client.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/ssl/kube-proxy-key.pem"
+      mode:       0600
+      contents:
+        inline: |
+          |###certs/${guest}-kube-${hostname}-kube-proxy-client-key.pem
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/manifests/kube-proxy.yaml"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/proxy.yaml
+
+    - filesystem: "root"
+      path:       "/etc/kubernetes/cfg/kube-proxy.cfg"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/${hostname}/kube-proxy.cfg
+
+    - path: /etc/ntp.conf
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          server 192.168.100.1
+          restrict default nomodify nopeer noquery limited kod
+          restrict 127.0.0.1
+          restrict [::1]
+
+    - filesystem: "root"
+      path:       "/etc/hosts"
+      mode:       0644
+      contents:
+        inline: |
+          |###out/hosts.txt
+
+    - path: /root/.profile
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          |###out/profile.txt
+
+    - path: /root/.curlrc.etcd
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          -k
+          --cacert /etc/ssl/certs/etcd/ca.pem 
+          --key /etc/ssl/certs/etcd/client-key.pem 
+          --cert /etc/ssl/certs/etcd/client.pem
+
+    - path: /root/.curlrc.k8s
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          -k
+          --cacert /etc/kubernetes/ssl/ca.pem 
+          --key /etc/kubernetes/ssl/client-key.pem 
+          --cert /etc/kubernetes/ssl/client.pem
+
+    - path: /etc/flannel/environment
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          FLANNELD_IFACE=${hostip}
+          FLANNELD_ETCD_ENDPOINTS=${etcdiplist}
+          FLANNELD_ETCD_CERTFILE=/etc/ssl/certs/etcd/client.pem
+          FLANNELD_ETCD_KEYFILE=/etc/ssl/certs/etcd/client-key.pem
+          FLANNELD_ETCD_CAFILE=/etc/ssl/certs/etcd/ca.pem
+
+    - path: /etc/flannel/etcd.cfg
+      filesystem: root
+      mode: 0644
+      contents:
+        inline: |
+          {
+              "Network": "172.16.0.0/16",
+              "SubnetLen": 24,
+              "Backend": {
+                  "Type": "vxlan",
+                  "VNI": 1,
+                  "Port": 8472
+              }
+          }

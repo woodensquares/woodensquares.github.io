@@ -1,0 +1,10 @@
+        - name: 50-network-config.conf
+          contents: |
+            [Unit]
+            Requires=etcd-member.service
+            [Service]
+            Environment=ETCDCTL_CA_FILE=/etc/ssl/certs/etcd/ca.pem
+            Environment=ETCDCTL_CERT_FILE=/etc/ssl/certs/etcd/client.pem
+            Environment=ETCDCTL_KEY_FILE=/etc/ssl/certs/etcd/client-key.pem
+            Environment=ETCDCTL_ENDPOINTS=${etcdiplist}
+            ExecStartPre=/bin/bash -c '/usr/bin/etcdctl set /coreos.com/network/config < /etc/flannel/etcd.cfg'

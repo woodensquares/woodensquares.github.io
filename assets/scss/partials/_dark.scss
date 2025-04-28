@@ -1,0 +1,7 @@
+// Colors
+@import "syntax-light";
+@import "terminal-light";
+@media (prefers-color-scheme: dark) {
+  @import "syntax-dark";
+  @import "terminal-dark";
+}

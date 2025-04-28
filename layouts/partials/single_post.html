@@ -1,0 +1,43 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/single_post.html -->" | safeHTML }}
+{{- end -}}
+{{ $cat := index .Params.categories 0}}
+<div class="page-container">
+  <div class="listpage-container">
+    <div class="article-title">
+      <a href="/categories/{{ $cat | lower }}.html"><img src="/static/images/{{ $cat }}.jpg" alt="{{ $cat }}"/></a>
+      <div class="titlecontainer">
+	    <span class="titletext">{{ .Title }}</span>
+	    <span class="tagstext">
+	        <br />Tags:&nbsp;
+              {{ range $k, $v := .Params.tags }}
+    	  <a href="/tags/{{ $v | lower }}.html">{{ $v }}</a>,
+    	  {{ end }}
+    	  &nbsp;first published on {{ .Date.Format "Jan 2, 2006" }}
+              {{ if isset .Params "modified" }}
+              -&nbsp;last modified on {{ dateFormat  "Jan 2, 2006" (printf "%s" .Params.modified) }}
+    	  {{ end }}
+    	</span>
+      </div>
+    </div>
+
+    <div class="articlecontainer">
+      {{ .Content }}
+    </div>
+
+    {{ if isset .Params "changelog" }}
+      {{ $logLen := len .Params.changelog }}
+      {{ if gt $logLen 0 }}
+        <div class="changelogcontainer">
+          <span class="changelogtitle">Changelog:</span>
+          <ul class="changelogulentries">
+            {{ range $k, $v := .Params.changelog }}
+              <li>{{ . }}</li>
+            {{ end }}
+          </ul>&nbsp;
+        </div>
+    {{ end }}
+  {{ end }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:partials/single_post.html -->" | safeHTML }}
+{{- end -}}

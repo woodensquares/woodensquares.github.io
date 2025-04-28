@@ -1,0 +1,8 @@
+    - name: flanneld.service
+      enabled: true
+      dropins:
+        - name: 40-Fix-environment.conf
+          contents: |
+            [Service]
+            ExecStartPre=/usr/bin/ln -sf /etc/flannel/environment /run/flannel/options.env
+${flanneldsetup}

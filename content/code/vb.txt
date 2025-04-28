@@ -1,0 +1,10 @@
+#!/bin/bash
+
+wanted=$1
+if vboxmanage showvminfo $wanted --machinereadable | grep -Fxq 'VMState="running"'; then
+  i3switch -o $wanted
+else
+  vboxmanage startvm $wanted
+  sleep 3
+  vboxputmount $wanted
+fi

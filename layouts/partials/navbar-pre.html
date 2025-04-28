@@ -1,0 +1,12 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/navbar_pre.html -->" | safeHTML }}
+{{- end -}}
+<header>
+<nav class="page-navbar-container">
+  <div class="page-navbar-home"> 
+    <div class="breadcrumbs">
+      <ul>
+        <li><a href="/" title="Home"><img src="/images/home.png" alt="home"></a></li>
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:partials/navbar_pre.html -->" | safeHTML }}
+{{- end -}}

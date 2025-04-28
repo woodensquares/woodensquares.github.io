@@ -1,0 +1,103 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:archive/single.html -->" | safeHTML }}
+{{- end -}}
+{{ partial "head" . }}
+{{ partial "header_title" . }}
+
+<!-- The page is organized as follows: -->
+
+<!-- div: yearcontainer -->
+<!--   div: yearentry YEAR /div: yearentry -->
+<!--   div: listpage-container -->
+<!--     ul: ulentries -->
+<!--       li: article of the current month -->
+<!--       li: article of the current month -->
+<!--       li: article of the current month -->
+<!--       li: article of the current month -->
+<!--     /ul: ulentries -->
+<!--     div: monthentry * /div: monthentry -->
+<!--     ul: ulentries -->
+<!--       li: article of the previous month -->
+<!--       li: article of the previous month -->
+<!--       li: article of the previous month -->
+<!--       li: article of the previous month -->
+<!--     /ul: ulentries -->
+<!--   /div: listpage-container -->
+<!-- /div: yearcontainer -->
+
+<!-- Technique described https://parsiya.net/blog/2016-02-14-archive-page-in-hugo/ -->
+<div class="page-container">
+  <div class="listpage-container">
+    {{ $.Scratch.Set "pyear" "INIT" }}
+    {{ $.Scratch.Set "pmonth" "INIT" }}
+    {{ range sort (where .Site.Pages "Type" "post") "Date" "desc" }}
+      {{ $pyear := $.Scratch.Get "pyear" }}
+      {{ $cyear := (.Date | dateFormat "2006") }}
+      {{ $cmonth := (.Date | dateFormat "Jan") }}  
+
+      <!-- we have some open divs, should we close them before the new ones start? -->
+      <!-- if the year is different, close everything -->
+        {{ if (and (ne $pyear "INIT") (ne $cyear $pyear))}}
+        </ul>  <!-- ulentries -->
+      </div> <!-- listpage-container -->
+    </div> <!-- yearcontainer -->
+        {{ else }}
+          <!-- if only the month is different, close the month list -->
+          {{ if (and (ne $cmonth ($.Scratch.Get "pmonth")) (ne "INIT" ($.Scratch.Get "pmonth")))}}
+        </ul>  <!-- ulentries -->
+          {{ end }}
+        {{ end }}
+
+
+      <!-- if we are not in the same year as prior, need to start the year divs -->        
+      {{ if (ne $cyear $pyear)}}
+        {{ $.Scratch.Set "pyear" $cyear }}
+        {{ $.Scratch.Set "pmonth" "INIT" }}
+      <div class="yearcontainer">
+
+        <!-- Title of the whole page, only ever displayed once -->
+        {{ if (eq $pyear "INIT") }}
+        <div class="listpage-demileader">Archives</div>
+        {{ end }}
+        
+        <div class="yearentry">{{ $cyear }}</div>
+        <div class="listpage-container"> 
+      {{ end }}
+
+      <!-- if we are not in the same month as prior, need to start the month list -->            
+      {{ $pmonth := $.Scratch.Get "pmonth" }}
+      {{ if (ne $cmonth $pmonth)}}
+        <!-- if we had a previous month, add a * separator -->
+        {{ if (ne $pmonth "INIT")}}
+          <div class="monthentry">*</div>
+          {{ end }}
+          
+          <ul class="ulentries compact">
+        {{ $.Scratch.Set "pmonth" $cmonth }}
+      {{ end }}
+
+      <!-- A single entry for the list-->
+            <li>
+              <span>
+                {{ $cat := index .Params.categories 0 }}
+  		<a href="/categories/{{ $cat | lower}}.html"><img src="/static/images/{{ $cat }}.jpg" alt="{{ $cat }}"/></a>&nbsp;&nbsp;
+		<a href="{{ .Permalink }}">{{ .Params.shorttitle }}</a>
+	      </span>
+	      <span>{{ .Date | dateFormat "Jan 02" }}</span>
+	    </li>
+    {{ end }}
+            
+    <!-- at the very end we have to close all our divs regardless -->
+        </ul>  <!-- ulentries -->
+      </div> <!-- listpage-container -->
+    </div> <!-- yearcontainer -->
+    &nbsp;
+    <div id="listpage-tailer">&nbsp;</div> 
+  </div>
+</div>
+
+{{ partial "copyright" . }}
+{{ partial "footer" . }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:archive/single.html -->" | safeHTML }}
+{{- end -}}

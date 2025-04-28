@@ -1,0 +1,25 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/pagination.html -->" | safeHTML }}
+{{- end -}}
+<div class="pagination">  
+  <div class="left"> 
+    {{ if .Paginator.HasPrev }}
+      <a href="{{ .Paginator.Prev.URL | absURL }}">&lt;&lt;&lt;</a> 
+    {{ else }}
+      <br /> 
+    {{ end }}
+  </div> 
+  <div class="center"> 
+    <a href="https://gohugo.io">Powered by Hugo</a>
+  </div> 
+  <div class="right"> 
+    {{ if .Paginator.HasNext }}
+      <a href="{{ .Paginator.Next.URL | absURL }}">&gt;&gt;&gt;</a> 
+    {{ else }}
+      <br /> 
+    {{ end }}
+  </div> 
+</div>  
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:partials/pagination.html -->" | safeHTML }}
+{{- end -}}

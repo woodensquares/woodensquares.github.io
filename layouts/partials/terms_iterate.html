@@ -1,0 +1,55 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/terms_iterate.html -->" | safeHTML }}
+{{- end -}}
+{{ $whatname := ($.Scratch.Get "whatname") }}
+<div class="page-container">
+  <div class="listpage-container">  
+    <div class="listpage-demileader">{{ ($whatname | humanize) }}</div> 
+    <ul class="ulentries"> 
+      {{ $.Scratch.Set "termiter" true }}
+      {{ range $cur := .Scratch.Get "what" }}
+        {{ if (eq ($.Scratch.Get "termiter") true) }}
+          {{ $.Scratch.Set "termiter" false }}
+        {{ end }}
+        <li> 
+  	  <span>
+  	    <a href="{{ $cur.Page.RelPermalink }}">{{ if (eq $whatname "categories")}}<img src="/static/images/{{ $cur.Page.Title }}.jpg" alt="{{ $cur.Page.Title }}"/>&nbsp;&nbsp;{{end}}{{ $cur.Page.Title }}</a> 
+  	  </span> 
+  	  <span> 
+  	    {{ len $cur }}
+  	  </span> 
+        </li> 
+        {{ end }}
+    </ul> 
+  </div>
+</div>
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:partials/terms_iterate.html -->" | safeHTML }}
+{{- end -}}
+
+<!-- {{ $whatname := ($.Scratch.Get "whatname") }} -->
+<!-- <div class="listpage-top"> -->
+<!--   <div class="listpage-container"> -->  
+<!--     <div class="listpage-demileader">{{ ($whatname | humanize) }}</div> --> 
+<!--     <ul class="ulentries"> --> 
+<!--       {{ $.Scratch.Set "termiter" true }} -->
+<!--       {{ range .Scratch.Get "what" }} -->
+<!--         {{ if (eq ($.Scratch.Get "termiter") true) }} -->
+<!--           {{ $.Scratch.Set "termiter" false }} -->
+<!--         {{ end }} -->
+<!--         <li> --> 
+<!--   	  <span> -->
+<!--             <!-1- No idea why in the current hugo the name is lowercased already -1-> -->
+<!--   	    <a href="{{ .Page.Permalink }}">{{ if (eq $whatname "categories")}}<img src="/static/images/{{ .Page.Title }}.jpg" alt="{{ .Page.Title }}"/>&nbsp;&nbsp;{{end}}{{ .Page.Title }}</a> --> 
+<!--   	  </span> --> 
+<!--   	  <span> --> 
+<!--   	  </span> --> 
+<!--         </li> --> 
+<!--         {{ end }} -->
+<!--     </ul> --> 
+<!--     <!-1- For some reason without this webkit (safari/ios) messes up the formatting -1-> -->
+<!--     &nbsp; -->
+<!--   </div> --> 
+<!--   <div id="archivestailer">&nbsp;</div> -->  
+<!-- </div> -->
+

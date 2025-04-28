@@ -1,0 +1,41 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/terms_one.html -->" | safeHTML }}
+{{- end -}}
+{{ $whatname := ($.Scratch.Get "whatname") }}
+<div class="page-container">
+  <div class="listpage-container">
+    {{ if (eq $whatname "tags" )}}
+      {{ $bogus := ( .Title | lower ) }}
+      {{ if (eq $bogus "pfsense" )}}
+        <div class="listpage-demileader">pfSense</div>
+      {{ else }}
+        <div class="listpage-demileader">{{ $bogus }}</div>
+      {{ end }}
+    {{ else }}
+      <div class="listpage-demileader">{{ .Title }}</div>
+    {{ end }}
+
+    <ul class="ulentries"> 
+      {{ range $name, $items := .Data.Pages }}
+        <li> 
+  	  <span>
+            {{ $cat := index $items.Params.categories 0 }}
+            {{ if (eq $whatname "tags" )}}
+              <img src="/static/images/{{ $cat }}.jpg" alt="{{ $cat }}"/>
+            {{ end }}
+	      <a href="{{ $items.Permalink }}">{{ $items.Params.shorttitle }}</a>
+  	  </span> 
+  	  <span>
+            {{ $items.Date.Format "Jan 2, 2006" }}
+  	  </span> 
+        </li> 
+        {{ end }}
+    </ul> 
+    <!-- For some reason without this webkit (safari/ios) messes up the formatting -->
+    &nbsp;
+  </div> 
+  <div id="archivestailer">&nbsp;</div>  
+</div>
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:partials/terms_one.html -->" | safeHTML }}
+{{- end -}}

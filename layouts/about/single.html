@@ -1,0 +1,24 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:about/single.html -->" | safeHTML }}
+{{- end -}}
+{{ partial "head" . }}
+<body>
+<div class="page-global-container">
+    {{ partial "header_title" . }}
+
+    <div class="page-container">
+        <div class="articlecontainer">
+            <div class="about-leader">{{ .Title }}</div>
+            <div class="about-authorlogo">
+                <img src="/static/images/Site.jpg" alt="site">
+            </div>
+            {{ partial "article_content" . }}
+        </div>
+    </div>
+    {{ partial "copyright" . }}
+    {{ partial "footer" . }}
+</div>
+</body>
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:about/single.html -->" | safeHTML }}
+{{- end -}}

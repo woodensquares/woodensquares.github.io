@@ -1,0 +1,263 @@
++++
+type = "code"
+title = "i3bar"
+description = ""
+tags = [
+]
+date = "2016-05-08T12:57:00-08:00"
+categories = [
+]
+shorttitle = "i3bar"
+changelog = [ 
+    "Initial release - 2016-05-08",
+    "Act only on left click - 2018-01-16",
+]
++++
+
+This script is to be used for an i3bar monitoring your VirtualBox VMs
+[as discussed here]({{< ref "i3-part-1.md#i3bar" >}})
+
+The script has to find the running VirtualBox VMs and compute CPU/Memory
+for them, it is faster to use /proc directly for this as opposed to
+vboxmanage, although it makes the code definitely a bit more involved.
+
+I wanted this script to be able to run without dependencies and
+reasonably fast (since it has to run every second or two), hence the use
+of shell (instead of python with i3ipc) and a direct *i3msg* call to
+switch instead of [the i3switch script](/pages/i3switch.html)
+
+[link to the source file](/code/i3bar.txt)
+
+```bash
+#!/bin/bash
+set -e
+
+# Configurable variables
+readonly TIMEOUT=4        # Should be less than the update interval
+
+# Internal variables
+declare -A VMS
+declare -A RVMS
+declare -A CMDS
+declare -A VMTIMESU
+declare -A VMTIMESS
+declare -A STATE
+declare -A RAM
+FIRST="todo"
+
+# Need to restart this every time a new VirtualBox VM is added
+# to the system, otherwise we won't know what it is
+function vbox_get_vms {
+  while IFS= read -r x; do
+    if [[ $x =~ \"([^\"]*)\"\ \{(.*)\} ]]; then
+      if [[ ${BASH_REMATCH[1]} != '<inaccessible>' ]]; then
+        VMS[${BASH_REMATCH[2]}]=${BASH_REMATCH[1]}
+        RVMS[${BASH_REMATCH[1]}]=${BASH_REMATCH[2]}
+      fi
+    fi
+  done< <(vboxmanage list vms)
+}
+
+function vbox_get_time_for_vm(){
+  local __what=$1
+  local __pid=$2
+
+  if [[ $__what =~ startvm\^@([^\^]*) || $__what =~ -s\^@([^\^]*) ]]; then
+    wanted=${BASH_REMATCH[1]}
+    if test "${RVMS[${BASH_REMATCH[1]}]}"; then
+      wanted=${RVMS[${BASH_REMATCH[1]}]}
+    fi
+    if test "${VMS[$wanted]}"; then
+      # Get the times for the process, and the system times
+      local __stat=$(cat "/proc/$__pid/stat")
+      # remove everything up to the first ) to get rid of the
+      # process name etc.
+      local __times=${__stat:$(expr index "$__stat" '\)' )}
+      __times=($__times)
+
+      # user is #11 and system is #12, don't need to be too precise
+      # just need to have an idea if any of these is high cpu, manually
+      # compared with top and it seems to work
+      VMTIMESU[$wanted]=${__times[11]}
+      VMTIMESS[$wanted]=${__times[12]}
+
+      __stat=$(cat "/proc/$__pid/statm")
+      local __mem=($__stat)
+      # rss is the second value
+      RAM[$wanted]=${__mem[1]}
+    fi
+  fi
+}
+
+function vbox_get_times {
+  # First grab any vboxheadless
+
+  while IFS= read -r x; do
+    if [[ -f /proc/$x/cmdline ]]; then
+      cmdline=$(cat -v "/proc/$x/cmdline")
+      vbox_get_time_for_vm "$cmdline" "$x"
+    fi
+  done< <(ps --no-heading -C VBoxHeadless -o pid | sed -e 's/ *//')
+
+  # Now any normal vbox commands
+  while IFS= read -r x; do
+    if [[ -f /proc/$x/cmdline ]]; then
+      cmdline=$(cat -v "/proc/$x/cmdline")
+      vbox_get_time_for_vm "$cmdline" "$x"
+    fi
+  done< <(ps --no-heading -C VirtualBox -o pid | sed -e 's/ *//')
+}
+
+function vbox_main {
+  local __stimes=$(head -1 < /proc/stat)
+  __stimes=($__stimes)
+  # the first one is 'cpu'
+  __stimes[0]=0
+  TOTAL=0
+  for CUR in "${__stimes[@]}"; do
+    let "TOTAL = $TOTAL + $CUR" || true
+  done
+
+  if [[ $FIRST == "done" ]]; then
+    vbox_get_times
+    for k in "${!VMS[@]}"; do
+      if test "${VMTIMESU[$k]}"; then
+        local __temp=0
+        if test "${SVMTIMESU[$k]}"; then
+          let "__temp = ( ${VMTIMESU[$k]} - ${SVMTIMESU[$k]} ) + ( ${VMTIMESS[$k]} - ${SVMTIMESS[$k]} )" || true
+        else
+          let "__temp = ${VMTIMESU[$k]} + ${VMTIMESS[$k]}" || true
+        fi
+        __load=$(bc <<< "scale=0;($__temp * 100 * $NUMCPUS) / ( $TOTAL - $STATETOTAL)")
+        __mem=$(bc <<< "scale=1;(${RAM[$k]} * $PAGE_SIZE) / 1073741824.0")
+        if [[ $__load -gt $3 ]]; then
+          local __text=$(printf "<span color=\\\\\\\"#eeeeee\\\\\\\">%s:</span><span color=\\\\\\\"$2\\\\\\\"> %3d%% %.1f GB</span>" "${VMS[$k]}" "$__load" "$__mem" )
+          entry "${VMS[$k]}" "$__text" "\"instance\":\"$k\""
+        else
+          local __text=$(printf "<span color=\\\\\\\"#eeeeee\\\\\\\">%s:</span><span color=\\\\\\\"$1\\\\\\\"> %3d%% %.1f GB</span>" "${VMS[$k]}" "$__load" "$__mem" )
+          entry "${VMS[$k]}" "$__text" "\"instance\":\"$k\""
+        fi
+      fi
+     done
+  else
+    FIRST="done"
+    entry vbox "Calculating..." "\"color\":\"$1\""
+
+    vbox_get_vms
+    vbox_get_times
+    PAGE_SIZE=$(getconf PAGE_SIZE)
+    NUMCPUS=0
+    while IFS= read -r x; do
+      if [[ $x == cpu* ]]; then
+        let "NUMCPUS += 1" || true
+      fi
+    done< <(cat /proc/stat)
+    let "NUMCPUS -= 1" || true
+  fi
+}
+
+function on_event {
+  case $name in
+    date)
+      ;;
+    *)
+      # If the user didn't left click, ignore the event
+      if [[ $button != 1 ]]; then
+        return
+      fi
+
+      # We are in a different subshell than status_loop
+      # so have to get the VMs here too
+      vbox_get_vms
+
+      # Nuke the previous times just in case for some reason
+      # a headless vm was relaunched non headless or vice-versa
+      for k in "${!VMS[@]}"
+      do
+        VMTIMESU["$k"]="no"
+      done
+
+      while IFS= read -r x; do
+        if [[ -f /proc/$x/cmdline ]]; then
+          cmdline=$(cat -v "/proc/$x/cmdline")
+          vbox_get_time_for_vm "$cmdline" "$x"
+        fi
+      done< <(ps --no-heading -C VBoxHeadless -o pid | sed -e 's/ *//')
+
+      # If we get here the VM should be guaranteed to be running (only
+      # way it wouldn't be if it it stopped between the bar displaying
+      # and the user clicking, very unlikely) so use the arrays without
+      # testing
+      headless="${VMTIMESU[${RVMS[$name]}]}"
+      if [[ $headless != "no" ]]; then
+        # >&2 echo "returning, headless VM"
+        return
+      fi
+
+      # In case there is a snapshot the name will be $name (snapshot) so
+      # use a regex, note that for VMs with more than one screen this
+      # will also focus both left/right
+      i3-msg -t command '[title="'$name' [^[]*\[Running\] - Oracle VM VirtualBox"] focus'
+  esac
+}
+
+h2_done_first_block=0
+h2_done_first_line=0
+
+function entry {
+  if [[ $h2_done_first_block == 1 ]]; then
+    echo -n ','
+  else
+    h2_done_first_block=1
+  fi
+  echo -ne '{"name":"'$1'","markup":"pango","full_text":"'$2'"'${3:+,$3}''${4:+,$4}'}'
+}
+
+function event_loop {
+  while read line
+  do
+    if [[ $line != '[' ]]; then
+      # Assign the event fields to local variables for easy access
+      eval "$(echo "$line" | sed -re 's/^,|\{|\}|"//g' -e 'y/,:/;=/')"
+      on_event > /dev/null
+    fi
+  done
+}
+
+function status_loop {
+  echo -e '{"version":1,"click_events":true}\n['
+  # Don't care if we end up running a little less than once a second
+  # due to commands taking a bit of time, we don't need to be super
+  # precise.
+  while sleep 1
+  do
+    [[ $h2_done_first_line == 1 ]] && echo -n ','
+    echo -n '['
+    vbox_main '#9999bb' '#ff9999' 80
+    entry date "  $(date '+%F %T')" "\"color\":\"#aaffaa\""
+    echo ']'
+    h2_done_first_block=0
+    h2_done_first_line=1
+
+    # Move the current state to previous
+    unset SVMTIMESU
+    unset SVMTIMESS
+    declare -A SVMTIMESU
+    declare -A SVMTIMESS
+    for k in "${!VMTIMESU[@]}"
+    do
+      SVMTIMESU["$k"]="${VMTIMESU["$k"]}"
+      SVMTIMESS["$k"]="${VMTIMESS["$k"]}"
+    done
+    unset VMTIMESS
+    declare -A VMTIMESS
+    unset VMTIMESU
+    declare -A VMTIMESU
+    STATETOTAL=$TOTAL
+  done
+}
+
+trap 'exit' EXIT INT TERM HUP
+status_loop &
+event_loop
+```

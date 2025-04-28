@@ -1,0 +1,23 @@
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/article_content.html -->" | safeHTML }}
+{{- end -}}
+<article class="article-content">
+    {{ .Content }}
+</article>
+
+{{ if isset .Params "changelog" }}
+  {{ $logLen := len .Params.changelog }}
+  {{ if gt $logLen 0 }}
+    <div class="changelogcontainer">
+      <span class="changelogtitle">Changelog:</span>
+      <ul class="changelogulentries">
+        {{ range $k, $v := .Params.changelog }}
+          <li>{{ . }}</li>
+        {{ end }}
+      </ul>&nbsp;
+    </div>
+  {{ end }}
+{{ end }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:partials/article_content.html -->" | safeHTML }}
+{{- end -}}

@@ -1,0 +1,20 @@
+{{ define "main" }}
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: start:_default/taxonomy.html -->" | safeHTML }}
+{{- end -}}
+
+{{ if (eq .Data.Plural "tags")}}
+  {{ $.Scratch.Set "whatname" "tags"}}
+{{ else }}
+  {{ $.Scratch.Set "whatname" "categories"}}
+{{ end }}
+
+{{ partial "header_terms" . }}
+{{ partial "terms_one" . }}
+
+{{ partial "copyright" . }}
+
+{{ if .Site.IsServer }}
+{{ "<!-- HDEBUG: end:_default/taxonomy.html -->" | safeHTML }}
+{{- end -}}
+{{ end }}
